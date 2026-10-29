@@ -9,19 +9,21 @@ const registrationRoutes = require("./src/routes/registrations");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const allowedOrigins = (process.env.CLIENT_ORIGIN || "http://localhost:5173")
-  .split(",")
-  .map((origin) => origin.trim().replace(/\/$/, ""));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://techfest-2026-portalnew.netlify.app"
+];
 
 app.use(cors({
   origin(origin, callback) {
-    // Allow tools such as curl/Postman that do not send an Origin header.
-    if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+    if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
+
+    console.error("Blocked CORS origin:", origin);
     return callback(new Error("Origin not allowed by CORS"));
   },
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type"]
 }));
 app.use(express.json({ limit: "100kb" }));
